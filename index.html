@@ -6,88 +6,204 @@
     <title>El Confesionario Anónimo</title>
     <style>
         body {
-            font-family: sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #14171a;
             transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         .dark-mode {
-            background-color: #333;
-            color: #f4f4f4;
+            background-color: #14171a;
+            color: #f0f2f5;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
         }
 
-        #settings {
-            text-align: right;
-            margin-bottom: 10px;
-        }
-
-        #settings label {
-            margin-left: 10px;
-        }
-
-        #secret-form {
+        header {
             background-color: #fff;
             padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e6ecf0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .dark-mode #secret-form {
-            background-color: #444;
-            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        .dark-mode header {
+            background-color: #1c1f23;
+            border-bottom-color: #26292e;
         }
 
-        #secret-form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+        header h1 {
+            font-size: 1.5em;
+            margin: 0;
         }
 
-        #secret-form select,
-        #secret-form textarea,
-        #secret-form input[type="file"],
-        #secret-form button {
-            width: calc(100% - 12px);
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .dark-mode #secret-form select,
-        .dark-mode #secret-form textarea,
-        .dark-mode #secret-form input[type="file"] {
-            background-color: #555;
-            color: #eee;
-            border-color: #666;
-        }
-
-        #secret-form input[type="file"] {
-            padding: 5px;
-        }
-
-        #secret-form button {
-            background-color: #007bff;
-            color: white;
+        #settings-btn {
+            background: none;
             border: none;
             cursor: pointer;
+            font-size: 1.2em;
+            color: #1da1f2;
+            outline: none;
         }
 
-        #secret-form button:hover {
-            background-color: #0056b3;
+        #settings-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            display: none;
+        }
+
+        .dark-mode #settings-modal {
+            background-color: #1c1f23;
+            color: #f0f2f5;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        #settings-modal label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #settings-modal select,
+        #settings-modal input[type="checkbox"] {
+            margin-left: 5px;
+        }
+
+        #publish-button {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 0;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        #publish-button:hover {
+            background-color: #0c85d0;
+        }
+
+        #publish-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            display: none;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .dark-mode #publish-modal {
+            background-color: #1c1f23;
+            color: #f0f2f5;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        #publish-modal h2 {
+            text-align: center;
+            color: #1da1f2;
+            margin-bottom: 15px;
+        }
+
+        #publish-modal label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #14171a;
+        }
+
+        .dark-mode #publish-modal label {
+            color: #f0f2f5;
+        }
+
+        #publish-modal select,
+        #publish-modal textarea,
+        #publish-modal input[type="file"] {
+            width: calc(100% - 16px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e6ecf0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: #f7f9fa;
+            color: #14171a;
+        }
+
+        .dark-mode #publish-modal select,
+        .dark-mode #publish-modal textarea,
+        .dark-mode #publish-modal input[type="file"] {
+            background-color: #26292e;
+            color: #f0f2f5;
+            border-color: #3b3e42;
+        }
+
+        #publish-modal textarea {
+            min-height: 100px;
+        }
+
+        #publish-modal input[type="file"] {
+            padding: 8px;
+        }
+
+        #publish-modal button {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1em;
+            outline: none;
+        }
+
+        #publish-modal button:hover {
+            background-color: #0c85d0;
+        }
+
+        #publish-modal .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #657786;
+            outline: none;
         }
 
         #secrets-container {
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .secret-post {
@@ -95,31 +211,35 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             word-wrap: break-word;
+            border-left: 5px solid #d1d9e0;
         }
 
         .dark-mode .secret-post {
-            background-color: #444;
-            color: #eee;
-            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+            background-color: #1c1f23;
+            color: #f0f2f5;
+            box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+            border-left-color: #3b3e42;
         }
 
         .secret-post.female {
-            border: 2px solid pink;
+            border-left-color: #e91e63; /* Rosa */
         }
 
         .secret-post.male {
-            border: 2px solid lightblue;
+            border-left-color: #2196f3; /* Azul */
         }
 
         .secret-post p {
             margin-bottom: 10px;
+            font-size: 1em;
+            line-height: 1.5;
         }
 
         .secret-images {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 10px;
         }
 
@@ -128,66 +248,94 @@
             height: auto;
             border-radius: 5px;
         }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <h1>El Confesionario Anónimo</h1>
+    <div class="container">
+        <header>
+            <h1>El Confesionario</h1>
+            <button id="settings-btn">⚙️</button>
+        </header>
 
-    <div id="settings">
-        <label>
-            Modo Oscuro:
-            <input type="checkbox" id="dark-mode-toggle">
-        </label>
-        <label>
-            Mostrar:
-            <select id="filter-gender">
-                <option value="both">Ambos</option>
-                <option value="female">Mujeres</option>
-                <option value="male">Hombres</option>
-            </select>
-        </label>
-    </div>
-
-    <div id="secret-form">
-        <h2>Comparte tu Secreto Anónimamente</h2>
-        <label for="gender">Género:</label>
-        <select id="gender" required>
-            <option value="">Seleccionar género</option>
-            <option value="female">Mujer</option>
-            <option value="male">Hombre</option>
-        </select>
-        <label for="secret-text">Secreto:</label>
-        <textarea id="secret-text" rows="4" required></textarea>
-        <label for="images">Imágenes (máximo 3):</label>
-        <input type="file" id="image1" accept="image/*">
-        <input type="file" id="image2" accept="image/*">
-        <input type="file" id="image3" accept="image/*">
-        <button onclick="postSecret()">Publicar Secreto</button>
-    </div>
-
-    <div id="secrets-container">
-        <h2>Secretos Publicados</h2>
+        <div id="settings-modal">
+            <h2>Ajustes</h2>
+            <label>
+                Modo Oscuro:
+                <input type="checkbox" id="dark-mode-toggle">
+            </label>
+            <label>
+                Mostrar:
+                <select id="filter-gender">
+                    <option value="both">Ambos</option>
+                    <option value="female">Mujeres</option>
+                    <option value="male">Hombres</option>
+                </select>
+            </label>
         </div>
 
+        <button id="publish-button">Publicar Secreto</button>
+
+        <div id="publish-modal">
+            <button class="close-button">&times;</button>
+            <h2>Comparte tu Secreto</h2>
+            <label for="publish-gender">Género:</label>
+            <select id="publish-gender" required>
+                <option value="">Seleccionar género</option>
+                <option value="female">Mujer</option>
+                <option value="male">Hombre</option>
+            </select>
+            <label for="publish-text">Secreto:</label>
+            <textarea id="publish-text" rows="5" required></textarea>
+            <label for="publish-image1">Imágenes (máximo 3):</label>
+            <input type="file" id="publish-image1" accept="image/*">
+            <input type="file" id="publish-image2" accept="image/*">
+            <input type="file" id="publish-image3" accept="image/*">
+            <button onclick="postSecret()">Publicar</button>
+        </div>
+
+        <div id="secrets-container">
+            <h2>Secretos</h2>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
     <script>
+        const body = document.body;
         const darkModeToggle = document.getElementById('dark-mode-toggle');
         const filterGender = document.getElementById('filter-gender');
-        const body = document.body;
         const secretsContainer = document.getElementById('secrets-container');
-        const genderInput = document.getElementById('gender');
-        const secretTextInput = document.getElementById('secret-text');
-        const imageInputs = [
-            document.getElementById('image1'),
-            document.getElementById('image2'),
-            document.getElementById('image3')
+        const publishButton = document.getElementById('publish-button');
+        const publishModal = document.getElementById('publish-modal');
+        const publishGenderInput = document.getElementById('publish-gender');
+        const publishTextInput = document.getElementById('publish-text');
+        const publishImageInputs = [
+            document.getElementById('publish-image1'),
+            document.getElementById('publish-image2'),
+            document.getElementById('publish-image3')
         ];
+        const closePublishModalButton = document.querySelector('#publish-modal .close-button');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const overlay = document.getElementById('overlay');
 
-        // Función para alternar el modo oscuro
+        // Modo Oscuro
         darkModeToggle.addEventListener('change', () => {
             body.classList.toggle('dark-mode');
         });
 
-        // Función para filtrar por género
+        // Filtrado por Género
         filterGender.addEventListener('change', () => {
             const selectedGender = filterGender.value;
             const allSecrets = document.querySelectorAll('.secret-post');
@@ -200,16 +348,41 @@
             });
         });
 
+        // Mostrar Modal de Publicación
+        publishButton.addEventListener('click', () => {
+            publishModal.style.display = 'block';
+            overlay.style.display = 'block';
+        });
+
+        // Cerrar Modal de Publicación
+        closePublishModalButton.addEventListener('click', () => {
+            publishModal.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+
+        // Mostrar Modal de Ajustes
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'block';
+            overlay.style.display = 'block';
+        });
+
+        // Cerrar Modales al hacer clic en el overlay
+        overlay.addEventListener('click', () => {
+            publishModal.style.display = 'none';
+            settingsModal.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+
         // Array para almacenar los secretos (simulación en el cliente)
         let secrets = [];
 
         function postSecret() {
-            const gender = genderInput.value;
-            const text = secretTextInput.value.trim();
+            const gender = publishGenderInput.value;
+            const text = publishTextInput.value.trim();
             const images = [];
             let validImages = 0;
 
-            for (const input of imageInputs) {
+            for (const input of publishImageInputs) {
                 if (input.files && input.files[0]) {
                     images.push(URL.createObjectURL(input.files[0]));
                     validImages++;
@@ -226,19 +399,21 @@
                     text: text,
                     images: images
                 };
-                secrets.unshift(newSecret); // Añadir al principio para mostrar el más reciente primero
+                secrets.unshift(newSecret); // Añadir al principio
                 displaySecrets();
-                // Limpiar el formulario después de publicar
-                genderInput.value = '';
-                secretTextInput.value = '';
-                imageInputs.forEach(input => input.value = '');
+                // Limpiar el formulario y cerrar el modal
+                publishGenderInput.value = '';
+                publishTextInput.value = '';
+                publishImageInputs.forEach(input => input.value = '');
+                publishModal.style.display = 'none';
+                overlay.style.display = 'none';
             } else {
                 alert("Por favor, selecciona tu género y escribe tu secreto.");
             }
         }
 
         function displaySecrets() {
-            secretsContainer.innerHTML = '<h2>Secretos Publicados</h2>';
+            secretsContainer.innerHTML = '<h2>Secretos</h2>';
             const selectedGenderFilter = filterGender.value;
 
             secrets.forEach(secret => {
@@ -266,7 +441,7 @@
             });
         }
 
-        // Mostrar los secretos iniciales (si los hubiera)
+        // Mostrar los secretos iniciales
         displaySecrets();
     </script>
 </body>
