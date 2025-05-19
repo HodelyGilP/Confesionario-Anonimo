@@ -443,6 +443,241 @@
         darkModeToggle.addEventListener('change', () => {
             body.classList.toggle('dark-mode');
         });
+filterGender.addEventListener('change', () => {
+            const selectedGender = filterGender.value;
+            const allSecrets = document.querySelectorAll('.secret-slide');
+            allSecrets.forEach(secret => {
+                if (selectedGender === 'both' || secret.classList.contains(selectedGender)) {
+                    secret.style.display = 'block';
+                } else {
+                    secret.style.display = 'none';
+                }
+            });
+        });
 
+        // Mostrar Modal de Publicación
+        publishButton.addEventListener('click', () => {
+            publishModal.style.display = 'flex';
+            overlay.style.display = 'block';
+        });
+
+        // Cerrar Modales al hacer clic en el overlay
+        overlay.addEventListener('click', () => {
+            publishModal.style.display = 'none';
+            settingsModal.style.display = 'none';
+            postDetailModal.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+
+        // Mostrar Modal de Ajustes
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+            overlay.style.display = 'block';
+        });
+
+        // Array para almacenar los secretos (simulación en el cliente)
+        let secrets = [];
+        let nextSecretId = 1; // Para identificar cada secreto y sus respuestas
+
+        function postSecret() {
+            const gender = publishGenderInput.value;
+            const text = publishTextInput.value.trim();
+            const images = [];
+            let validImages = 0;
+
+            for (const input of publishImageInputs) {
+                if (input.files && input.files[0]) {
+                    images.push(URL.createObjectURL(input.files[0]));
+                    validImages++;
+                    if (validImages > 3) {
+                        alert("Solo puedes subir un máximo de 3 imágenes.");
+                        return;
+                    }
+                }
+            }
+
+            if (gender && text) {
+                const newSecret = {
+                    id: nextSecretId++,
+                    gender: gender,
+                    text: text,
+                    images: images,
+                    reactions: { heart: 0, bad: 0 },
+                    replies: []
+                };
+                secrets.unshift(newSecret); // Añadir al principio
+                displaySecrets();
+                // Limpiar el formulario y cerrar el modal
+                publishGenderInput.value = '';
+                publishTextInput.value = '';
+                publishImageInputs.forEach(input => input.value = '');
+                publishModal.style.display = 'none';
+                overlay.style.display = 'none';
+            } else {
+                alert("Por favor, selecciona tu género y escribe tu secreto.");
+            }
+        }
+
+        function displaySecrets() {
+            secretsContainer.innerHTML = '<h2>Flow</h2>';
+            const selectedGenderFilter = filterGender.value;
+
+            secrets.forEach(secret => {
+                if (selectedGenderFilter === 'both' || secret.gender === selectedGenderFilter) {
+                    const secretDiv = document.createElement('div');
+                    secretDiv.classList.add('secret-slide', secret.gender);
+                    secretDiv.dataset.secretId = secret.id;
+
+                    const headerDiv = document.createElement('div');
+                    headerDiv.classList.add('secret-header');
+                    const anonymousSpan = document.createElement('span');
+                    anonymousSpan.classList.add('anonymous-flow');
+                    anonymousSpan.textContent = `Flow Anónimo (${secret.gender === 'female' ? 'Mujer' : 'Hombre'})`;
+                    headerDiv.appendChild(anonymousSpan);
+                    secretDiv.appendChild(headerDiv);
+
+                    const textParagraph = document.createElement('p');
+                    textParagraph.classList.add('secret-text');
+                    textParagraph.textContent = secret.text;
+                    secretDiv.appendChild(textParagraph);
+
+                    if (secret.images && secret.images.length > 0) {
+                        const imagesDiv = document.createElement('div');
+                        imagesDiv.classList.add('secret-images');
+                        secret.images.forEach(imageUrl => {
+                            const img = document.createElement('img');
+                            img.src = imageUrl;
+                            imagesDiv.appendChild(img);
+                        });
+                        secretDiv.appendChild(imagesDiv);
+                    }
+
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.classList.add('secret-actions');
+
+                    const heartButton = document.createElement('button');
+                    heartButton.classList.add('reaction-button');
+                    heartButton.innerHTML = '❤️ <span data-reaction="heart">' + secret.reactions.heart + '</span>';
+                    heartButton.addEventListener('click', () => updateReaction(secret.id, 'heart'));
+                    actionsDiv.appendChild(heartButton);
+
+                    const badButton = document.createElement('button');
+                    badButton.classList.add('reaction-button');
+                    badButton.innerHTML = '👎 <span data-reaction="bad">' + secret.reactions.bad + '</span>';
+                    badButton.addEventListener('click', () => updateReaction(secret.id, 'bad'));
+                    actionsDiv.appendChild(badButton);
+
+                    const replyButton = document.createElement('button');
+                    replyButton.classList.add('reply-button');
+                    replyButton.textContent = 'Responder';
+                    replyButton.addEventListener('click', () => showPostDetail(secret.id));
+                    actionsDiv.appendChild(replyButton);
+
+                    secretDiv.appendChild(actionsDiv);
+
+                    secretsContainer.appendChild(secretDiv);
+                }
+            });
+        }
+
+        function updateReaction(secretId, reactionType) {
+            const secret = secrets.find(s => s.id === secretId);
+            if (secret) {
+                secret.reactions[reactionType]++;
+                displaySecrets(); // Re-render para actualizar la visualización
+            }
+        }
+
+        function showPostDetail(secretId) {
+            const secret = secrets.find(s => s.id === secretId);
+            if (secret) {
+                postDetailContent.innerHTML = ''; // Limpiar el contenido anterior
+
+                const secretContentDiv = document.createElement('div');
+                secretContentDiv.classList.add('secret-content', secret.gender);
+
+                const headerDiv = document.createElement('div');
+                headerDiv.classList.add('secret-header');
+                const anonymousSpan = document.createElement('span');
+                anonymousSpan.classList.add('anonymous-flow');
+                anonymousSpan.textContent = `Flow Anónimo (${secret.gender === 'female' ? 'Mujer' : 'Hombre'})`;
+                headerDiv.appendChild(anonymousSpan);
+                secretContentDiv.appendChild(headerDiv);
+
+                const textParagraph = document.createElement('p');
+                textParagraph.classList.add('secret-text');
+                textParagraph.textContent = secret.text;
+                secretContentDiv.appendChild(textParagraph);
+
+                if (secret.images && secret.images.length > 0) {
+                    const imagesDiv = document.createElement('div');
+                    imagesDiv.classList.add('secret-images');
+                    secret.images.forEach(imageUrl => {
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        imagesDiv.appendChild(img);
+                    });
+                    secretContentDiv.appendChild(imagesDiv);
+                }
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.classList.add('secret-actions');
+                actionsDiv.innerHTML = `
+                    <button class="reaction-button">❤️ <span data-reaction="heart">${secret.reactions.heart}</span></button>
+                    <button class="reaction-button">👎 <span data-reaction="bad">${secret.reactions.bad}</span></button>
+                `;
+                secretContentDiv.appendChild(actionsDiv);
+
+                postDetailContent.appendChild(secretContentDiv);
+
+                const repliesContainer = document.createElement('div');
+                repliesContainer.classList.add('replies-container');
+                repliesContainer.innerHTML = '<h4>Respuestas</h4>';
+                secret.replies.forEach(reply => {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.classList.add('reply-item', reply.gender);
+                    replyDiv.innerHTML = `<span class="anonymous-flow">Flow Anónimo (${reply.gender === 'female' ? 'Mujer' : 'Hombre'})</span><p>${reply.text}</p>`;
+                    repliesContainer.appendChild(replyDiv);
+                });
+                postDetailContent.appendChild(repliesContainer);
+
+                // Formulario para añadir respuesta
+                const replyForm = document.createElement('div');
+                replyForm.innerHTML = `
+                    <h4>Añadir Respuesta</h4>
+                    <select id="reply-gender-${secretId}">
+                        <option value="">Seleccionar género</option>
+                        <option value="female">Mujer</option>
+                        <option value="male">Hombre</option>
+                    </select>
+                    <textarea id="reply-text-${secretId}" rows="3" placeholder="Escribe tu respuesta"></textarea>
+                    <button onclick="addReply(${secretId})">Enviar Respuesta</button>
+                `;
+                postDetailContent.appendChild(replyForm);
+
+                postDetailModal.style.display = 'flex';
+                overlay.style.display = 'block';
+            }
+        }
+
+        function addReply(secretId) {
+            const gender = document.getElementById(`reply-gender-${secretId}`).value;
+            const text = document.getElementById(`reply-text-${secretId}`).value.trim();
+            if (gender && text) {
+                const secret = secrets.find(s => s.id === secretId);
+                if (secret) {
+                    secret.replies.push({ gender: gender, text: text });
+                    showPostDetail(secretId); // Re-render el modal de detalles
+                }
+            } else {
+                alert("Por favor, selecciona tu género y escribe tu respuesta.");
+            }
+        }
+
+        // Mostrar los secretos iniciales
+        displaySecrets();
+    </script>
+</body>
+</html>
         // Filtrado por Género
         filter
